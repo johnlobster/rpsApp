@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rock paper scissors</title>
+    
+    
+    
+    <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <!-- LINK TO FIREBASE GOES HERE -->
+    <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>  
+
+</head>
+<body>
+    <div class="jumbotron jumbotron-fluid" id="myJumbotron">
+        <div class="container-fluid">
+            
+            <div id="jumbotronBox">
+                <button class="btn btn-primary btn-lg" id="instructionsButton" data-toggle="modal"
+                data-target="#instructionsModal"> Instructions</button>
+                <!-- Instructions are a bootstrap modal will link to the instruction button  -->
+                <div class="modal fade" id="instructionsModal" tabindex="-1">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Instructions</h5>
+                                <button type="button" class="close" id="closeInstructions1" data-dismiss="modal"
+                                aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <p>The object of the game is to defeat all your enemies</p>
+                            <p>First - select your hero - all the others become your enemies</p>
+                            <p>Second - choose the enemy you will face</p>
+                            <p>Third - fight your enemy by clicking on the light sabre</p>
+                            <br>
+                            <p>Each time your hero attacks, his ability to attack increases - the enemies attack does not
+                                increase</p>
+                                <p>When your enemy is defeated, move on to the next one</p>
+                                <p>When all the enemies are defeated, you can start again</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="closeInstructions2" class="btn btn-secondary"
+                                data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="lead mr-4" id="title">Multiplayer rock paper scissors</p>
+            </div>
+                
+        </div>
+    </div>
+
+    </div>
+    <div class="container container-fluid">
+        <div class="row"> <!-- The top area showing user, rps images and opponent-->
+            <div class="col-12 col-md-3" id="userBox">
+                <div class="row">
+                    <span id="nameSpan">You</span>
+                </div>
+                <div class="row">
+                    Wins
+                    <span id="winsSpan"></span>
+                </div>
+                <div class="row">
+                    Losses
+                    <span id="lossesSpan"></span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6" id="rpsBox">
+                <button id="rockButton">
+                    <img src="assets/images/rock.png" alt="Rock" id="rockImage">
+                </button>
+                <button id="paperButton">
+                    <img src="assets/images/paper.png" alt="Paper" id="paperImage">
+                </button>
+                <button id="scissorsButton">
+                    <img src="assets/images/scissors.png" alt="Scissors" id="scissorsImage">
+                </button>
+                
+                
+                
+            </div>
+            <div class="col-12 col-md-3" id="opponentBox">
+                
+                <div class="row">
+                    <span id="OpponentNameSpan">The enemy</span>
+                </div>
+                <div class="row">
+                    Wins
+                    <span id="OpponentWinsSpan"></span>
+                </div>
+                <div class="row">
+                    Losses
+                    <span id="OpponentLossesSpan"></span>
+                </div>
+                
+            </div>
+        </div>
+        <div class="row" id="statusBox">
+            Status
+        </div>
+        <div class="row"> <!-- login area, shown first -->
+            <div id="loginBox" class="col-12 col-md-6">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Enter your name to log on</label>
+                        <input class="form-control" type="text" id="loginBox"></input>
+                    </div>
+                    <button id="newButton" type="submit" class="btn btn-primary mb-2">submit</button>
+                </form>
+            </div>
+            <div id="chatBox" class="col-12" style="display:none;"> <!-- chat area shown after login -->
+            </div>
+        </div>
+    </div>
+   
+    <script src="assets/javascript/rpsApp.js"></script>
+</body>
+</html>

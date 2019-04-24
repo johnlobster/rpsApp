@@ -1,0 +1,24 @@
+/* Styles for rock paper scissors app
+   John Webster
+*/
+
+#myJumbotron {
+    padding: 0;
+    margin: 0;
+}
+#rpsBox {
+    /* height: 20rem; */
+    background-image: url(../images/paper_texture.jpg);
+    background-repeat: repeat;
+}
+
+#rockImage {
+    height: 150px;
+    background:transparent;
+}
+#paperImage {
+    height: 150px;
+}
+#scissorsImage {
+    height: 150px;
+}
