@@ -85,13 +85,13 @@
                 </div>
             </div>
             <div class="col-12 col-md-6" id="rpsBox">
-                <button id="rockButton">
+                <button id="rockButton" class="rpsButton" data-value="rock">
                     <img src="assets/images/rock.png" alt="Rock" id="rockImage">
                 </button>
-                <button id="paperButton">
+                <button id="paperButton" class="rpsButton" data-value="paper">
                     <img src="assets/images/paper.png" alt="Paper" id="paperImage">
                 </button>
-                <button id="scissorsButton">
+                <button id="scissorsButton" class="rpsButton" data-value="scissors">
                     <img src="assets/images/scissors.png" alt="Scissors" id="scissorsImage">
                 </button>
                 
@@ -118,13 +118,13 @@
             Status
         </div>
         <div class="row"> <!-- login area, shown first -->
-            <div id="loginBox" class="col-12 col-md-6">
+            <div id="loginDiv" class="col-12 col-md-6">
                 <form>
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1">Enter your name to log on</label>
+                        <label for="loginBox">Enter your name to log on</label>
                         <input class="form-control" type="text" id="loginBox"></input>
                     </div>
-                    <button id="newButton" type="submit" class="btn btn-primary mb-2">submit</button>
+                    <button id="loginButton" type="submit" class="btn btn-primary mb-2">submit</button>
                 </form>
             </div>
             <div id="chatBox" class="col-12" style="display:none;"> <!-- chat area shown after login -->
