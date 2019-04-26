@@ -13,14 +13,14 @@
 }
 
 #rockImage {
-    height: 150px;
+    height: 75px;
     background:transparent;
 }
 #paperImage {
-    height: 150px;
+    height: 75px;
 }
 #scissorsImage {
-    height: 150px;
+    height: 75px;
 }
 #statusBox {
     height: 3rem;

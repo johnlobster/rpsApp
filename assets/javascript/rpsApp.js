@@ -25,9 +25,7 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var connectingRef = database.ref("/connecting");
 var dataRef = database.ref("/data");
-var userNumber = 0;
-var result = "";
-var opponentResult = "";
+
 
 
 // Globals
@@ -38,8 +36,17 @@ var opponentRpsSelect = "";
 var userName = "";
 var opponentName = "";
 var gamesWon = 0;
+var opponentGamesWon = 0;
 var gamesLost = 0;
+var opponentGamesLost = 0;
+var userNumber = 0;
+var result = "";
+var opponentResult = "";
+var timeAllowed = 20; // in seconds
+var progressBarTimer = 0;
+var localInterval;
 var localTimeout;
+
 
 // Functions
 
@@ -58,10 +65,27 @@ function initializeDatabase () {
     console.log( "Database initialized");
 }
 
+function changeState ( newState) {
+    console.log("Old state " + state + " new state " + newState);
+    state = newState;
+}
+
+// update the progress bar timing the game
+function updateProgressBar() {
+    progressBarTimer += 5; // percentage
+    var progressString = String(progressBarTimer) + "%";
+    console.log("Progress " + progressString);
+    $("#progressBar").css("width", progressString);
+    if (progressBarTimer === 100) {
+        //stop timer
+        clearInterval(localInterval);
+        $("#progressBar").css("width", "0%");
+    }
+}
 // connection listener abstracted as a function
 function connectionListener(snapshot) {
     console.log("Connection: State=" + state);
-    console.log("Snapshot : " + snapshot.val().user1)
+    
     if (!snapshot.child("user1").exists()) {
         console.log("check " + snapshot.child("user1").exists());
         // database not set up yet
@@ -71,36 +95,43 @@ function connectionListener(snapshot) {
 
     // console.log("Connection: State=" + state + " 1=" + snapshot.val().user1 + " 2=" + snapshot.val().user2);
     if (state === "waitingForUser") {
-        // if (!snapshot.child("user1")) {
-        //     // database not set up yet
-        //     initializeDatabase();
-        // }
+        
         if (snapshot.val().user1 === "") {
             // first to log on
-            state = "waitingForPlayer2";
+            changeState("waitingForPlayer2");
             connectingRef.update({user1:userName});
             userNumber = 1;
         } 
         else {
             // second to log on
-            state= "waitingForStart";
+            changeState("waitingForStart");
+            $("#statusSpan").text("Waiting for start");
             connectingRef.update({ user2: userName });
+            $("#startButton").removeAttr("disabled");
             userNumber = 2;
+            // update enemy information
+            opponentName = snapshot.val().user1;
+            $("#opponentNameSpan").text(opponentName);
         }
         
     }
     else if ( state==="waitingForPlayer2") {
-        if ( ! snapshot.val().user2 === "") {
-            state = "waitingForStart";
+        
+        if (  snapshot.val().user2 !== "") {
+            
+            changeState("waitingForStart");
+            $("#statusSpan").text("Waiting for start");
+            $("#startButton").removeAttr("disabled");
             opponentName = snapshot.val().user2;
             // update on screen
-            $("#OpponentNameSpan").text(opponentName);
-            userNumber = 2;
+            $("#opponentNameSpan").text(opponentName);
+            userNumber = 1;
         }
     }
     else if ( state==="waitingForStart") {
         if( snapshot.val().start === "true") {
-            state = "playing";
+
+            changeState("playing");
             gamePlay();
         }
         
@@ -111,10 +142,16 @@ function connectionListener(snapshot) {
 
 // function to deal with timeout of main part of game
 function gamePlay() {
+    console.log("setting timeout");
+    // set up progress bar
+    progressBarTimer = 0;
+    $("#progressBar").css("width", "0%");
+    localInterval = setInterval(updateProgressBar, (timeAllowed/20)*1000);
     localTimeout = setTimeout(function () {
         // work out who won
         // no input is a loss
-        if (( rpsSelect === "") && (opponentRpsSelect === "")) {
+        console.log("Timeout you " + rpsSelect + " opponent " + opponentRpsSelect);
+        if (( rpsSelect === "") & (opponentRpsSelect === "")) {
             // no winner
             result = "draw";
             opponentResult = "draw";
@@ -123,12 +160,12 @@ function gamePlay() {
             result = "loss";
             opponentResult = "win";
         }
-        else if (OpponentRpsSelect === "") {
+        else if (opponentRpsSelect === "") {
             result = "win";
             opponentResult = "loss";
         }
         // main decision logic
-        if ( rpsSelect === "rock") {
+        else if ( rpsSelect === "rock") {
             if ( opponentRpsSelect === "paper") {
                 result = "loss";
                 opponentResult = "win";
@@ -171,19 +208,33 @@ function gamePlay() {
             }
         }
         // show results
+        $("#lastResult").text(result);
+        $("#opponentLastResult").text(opponentResult);
+        if (result === "win") {
+            $("#statusSpan").text("you won");
+            
+        } 
+        else if (result === "loss") {
+            $("#statusSpan").text("you lost");
+        }
+        else {
+            $("#statusSpan").text("it was a draw");
+        }
+        
         // reset values
         rpsSelect="";
         opponentRpsSelect = "";
         result = "";
         opponentResult = "";
         // reset values in database
-        dataRef.set({
+        dataRef.update({
             rpsSelectUser1: "",
             rpsSelectUser2: ""
         });
+        connectingRef.update({start: ""});
         // set state back to waitingForStart so another game can be played
-        state="waitingForStart";
-    }, 20000);
+        changeState("waitingForStart");
+    }, timeAllowed * 1000);
 
 }
 // Body starts here
@@ -204,6 +255,7 @@ $("#loginButton").on("click", function (event) {
         $("#loginBox").val("");
         // update name on screen
         $("#nameSpan").text( userName);
+        $("#statusSpan").text("Waiting for second user");
         // set up listener on connect database
         connectingRef.on("value", function (snapshot) {
             connectionListener(snapshot);
@@ -216,9 +268,10 @@ $("#loginButton").on("click", function (event) {
 // listener on start button
 $("#startButton").on("click", function() {
     if ( state === "waitingForStart") {
-        state="playing";
+        changeState("playing");
+        $("#statusSpan").text("Playing game click on an image");
         // let the other player know it started
-        connectingRef.set({ start: "true" });
+        connectingRef.update({ start: "true" });
         gamePlay();
     }
 });
@@ -227,32 +280,38 @@ $("#startButton").on("click", function() {
 
 // listener on rps buttons, put it in a variable, will use value when timeout
 $(".rpsButton").on("click", function() {
-    rpsSelect = $(this).attr("data-value");
-    // send to database so other user can pick it up
-    if ( userNumber === 1) {
-        dataRef.set({rpsSelectUser1: rpsSelect});
+    console.log("rps button state = " + state );
+    // only works if playing game
+    if ( state ==="playing") {
+        rpsSelect = $(this).attr("data-value");
+        // send to database so other user can pick it up
+        if ( userNumber === 1) {
+            dataRef.update({rpsSelectUser1: rpsSelect});
+        }
+        else {
+            dataRef.update({ rpsSelectUser2: rpsSelect });
+        }
+        console.log(rpsSelect);
     }
-    else {
-        dataRef.set({ rpsSelectUser2: rpsSelect });
-    }
-    // console.log(rpsSelect);
 });
     
 // listener on database to find opponents selected value
 dataRef.on("value", function (snapshot) {
-    if (!snapshot.child("rpsSelectUser1").exists()) {
-        // database not set up yet
-        console.log("data : init database");
-        initializeDatabase();
-        return;
+    // only works if playing game
+    if (state==="playing") {
+        if (!snapshot.child("rpsSelectUser1").exists()) {
+            // database not set up yet
+            console.log("data : init database");
+            initializeDatabase();
+            return;
+        }
+        if ( userNumber === 1) {
+            opponentRpsSelect = snapshot.val().rpsSelectUser2;
+        }
+        else {
+            opponentRpsSelect = snapshot.val().rpsSelectUser1;
+        }
     }
-    if ( userNumber === 1) {
-        opponentRpsSelect = snapshot.val().rpsSelectUser2;
-    }
-    else {
-        opponentRpsSelect = snapshot.val().rpsSelectUser2;
-    }
-    
 }, function (errorObject) {
     console.log("Reading opponent data failed: " + errorObject.code);
 });
