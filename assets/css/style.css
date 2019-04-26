@@ -25,3 +25,17 @@
 #statusBox {
     height: 3rem;
 }
+#userImage {
+    height: 75px;
+}
+#opponentImage {
+    height: 75px;
+}
+
+.infoSpan {
+    font-size: 1.5rem;
+    margin-left: 10px;
+}
+.infoRow {
+    font-size: 1.5rem;
+}

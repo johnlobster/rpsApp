@@ -73,19 +73,26 @@
         <div class="row"> <!-- The top area showing user, rps images and opponent-->
             <div class="col-12 col-md-3" id="userBox">
                 <div class="row">
-                    <span id="nameSpan">You</span>
+                    <h3><span id="nameSpan" >You</span></h3>
                 </div>
-                <div class="row">
+                <div class="row infoRow">
+                    <img id ="userImage" src="assets/images/question_mark.png" alt ="question mark">
+                </div> 
+                <div class="row infoRow">
                     Last result
-                    <span id="lastResult"></span>
+                    <span id="lastResult" class="infoSpan"></span>
                 </div>
-                <div class="row">
+                <div class="row infoRow">
                     Wins
-                    <span id="winsSpan"></span>
+                    <span id="winsSpan" class="infoSpan"></span>
                 </div>
-                <div class="row">
+                <div class="row infoRow">
                     Losses
-                    <span id="lossesSpan"></span>
+                    <span id="lossesSpan" class="infoSpan"></span>
+                </div>
+                <div class="row infoRow">
+                    Games played
+                    <span id="gamesPlayedSpan" class="infoSpan"></span>
                 </div>
             </div>
             <div class="col-12 col-md-6" id="rpsBox">
@@ -114,19 +121,26 @@
             <div class="col-12 col-md-3" id="opponentBox">
                 
                 <div class="row">
-                    <span id="opponentNameSpan">The enemy</span>
+                    <h3><span id="opponentNameSpan" >The enemy</span></h3>
                 </div>
-                <div class="row">
+                <div class="row infoRow">
+                    <img id="opponentImage" src="assets/images/question_mark.png" alt ="question mark">
+                </div>
+                <div class="row infoRow">
                     Last result
-                    <span id="opponentLastResult"></span>
+                    <span id="opponentLastResult" class="infoSpan"></span>
                 </div>
-                <div class="row">
+                <div class="row infoRow">
                     Wins
-                    <span id="opponentWinsSpan"></span>
+                    <span id="opponentWinsSpan" class="infoSpan"></span>
                 </div>
-                <div class="row">
+                <div class="row infoRow">
                     Losses
-                    <span id="opponentLossesSpan"></span>
+                    <span id="opponentLossesSpan"  class="infoSpan"></span>
+                </div>
+                <div class="row infoRow">
+                    Games played
+                    <span id="opponentGamesPlayedSpan" class="infoSpan"></span>
                 </div>
                 
             </div>
@@ -134,8 +148,10 @@
         <div class="row">
             <!-- start button doesn't work before login-->
             <button id="startButton" class= "btn btn-primary m-2" disabled >Start</button>
-            <span class="ml-2 mr-2">Status</span>
-            <span id="statusSpan"></span>
+            <h3>
+                <span class="ml-2 mr-2">Status</span>
+                <span id="statusSpan"></span>
+            </h3>
         </div>
         <div class="row"> <!-- login area, shown first -->
             <div id="loginDiv" class="col-12 col-md-6">

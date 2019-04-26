@@ -38,6 +38,7 @@ var opponentName = "";
 var gamesWon = 0;
 var opponentGamesWon = 0;
 var gamesLost = 0;
+var gamesPlayed = 0;
 var opponentGamesLost = 0;
 var userNumber = 0;
 var result = "";
@@ -74,7 +75,7 @@ function changeState ( newState) {
 function updateProgressBar() {
     progressBarTimer += 5; // percentage
     var progressString = String(progressBarTimer) + "%";
-    console.log("Progress " + progressString);
+    // console.log("Progress " + progressString);
     $("#progressBar").css("width", progressString);
     if (progressBarTimer === 100) {
         //stop timer
@@ -82,6 +83,45 @@ function updateProgressBar() {
         $("#progressBar").css("width", "0%");
     }
 }
+
+// update the info such as wins and losses
+function updateInfo() {
+    if (result === "") {
+        // initial setup of screen
+        $("#lastResult").text("");
+        $("#opponentLastResult").text("");
+    }
+    else {
+        $("#lastResult").text(result);
+        $("#opponentLastResult").text(opponentResult);
+    }
+    if (result === "win") {
+        $("#statusSpan").text("you won");
+        gamesWon++;
+        gamesPlayed++;
+    }
+    else if (result === "loss") {
+        $("#statusSpan").text("you lost");
+        gamesLost++;
+        gamesPlayed++;
+    }
+    else if (result === "draw") {
+        $("#statusSpan").text("it was a draw");
+        gamesPlayed++;
+    }
+    // display
+    $("#winsSpan").text(gamesWon);
+    $("#opponentWinsSpan").text(gamesLost);
+    $("#lossesSpan").text(gamesLost);
+    $("#opponentLossesSpan").text(gamesWon);
+    $("#gamesPlayedSpan").text(gamesPlayed);
+    $("#opponentGamesPlayedSpan").text(gamesPlayed);
+    
+
+}
+// run at start to populate everything
+updateInfo();
+
 // connection listener abstracted as a function
 function connectionListener(snapshot) {
     console.log("Connection: State=" + state);
@@ -142,6 +182,10 @@ function connectionListener(snapshot) {
 
 // function to deal with timeout of main part of game
 function gamePlay() {
+    // set up images etc.
+    $("#userImage").attr("src", "assets/images/question_mark.png");
+    $("#opponentImage").attr("src", "assets/images/question_mark.png");
+    $("#statusSpan").text("Playing game");
     console.log("setting timeout");
     // set up progress bar
     progressBarTimer = 0;
@@ -208,29 +252,28 @@ function gamePlay() {
             }
         }
         // show results
-        $("#lastResult").text(result);
-        $("#opponentLastResult").text(opponentResult);
-        if (result === "win") {
-            $("#statusSpan").text("you won");
-            
-        } 
-        else if (result === "loss") {
-            $("#statusSpan").text("you lost");
+        updateInfo();
+        if (opponentRpsSelect === "rock") {
+            $("#opponentImage").attr("src", "assets/images/rock.png");
         }
-        else {
-            $("#statusSpan").text("it was a draw");
+        else if (opponentRpsSelect === "paper") {
+            $("#opponentImage").attr("src", "assets/images/paper.png");
+        }
+        else if (opponentRpsSelect === "scissors") {
+            $("#opponentImage").attr("src", "assets/images/scissors.png");
         }
         
+        
         // reset values
-        rpsSelect="";
-        opponentRpsSelect = "";
+        // rpsSelect="";
+        // opponentRpsSelect = "";
         result = "";
         opponentResult = "";
         // reset values in database
-        dataRef.update({
-            rpsSelectUser1: "",
-            rpsSelectUser2: ""
-        });
+        // dataRef.update({
+        //     rpsSelectUser1: "",
+        //     rpsSelectUser2: ""
+        // });
         connectingRef.update({start: ""});
         // set state back to waitingForStart so another game can be played
         changeState("waitingForStart");
@@ -280,7 +323,6 @@ $("#startButton").on("click", function() {
 
 // listener on rps buttons, put it in a variable, will use value when timeout
 $(".rpsButton").on("click", function() {
-    console.log("rps button state = " + state );
     // only works if playing game
     if ( state ==="playing") {
         rpsSelect = $(this).attr("data-value");
@@ -291,7 +333,16 @@ $(".rpsButton").on("click", function() {
         else {
             dataRef.update({ rpsSelectUser2: rpsSelect });
         }
-        console.log(rpsSelect);
+        // update user image
+        if (rpsSelect === "rock"){
+            $("#userImage").attr("src", "assets/images/rock.png");
+        }
+        else if (rpsSelect === "paper") {
+            $("#userImage").attr("src", "assets/images/paper.png");
+        }
+        else if (rpsSelect === "scissors") {
+            $("#userImage").attr("src", "assets/images/scissors.png");
+        }
     }
 });
     
