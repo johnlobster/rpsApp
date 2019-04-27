@@ -124,7 +124,7 @@ updateInfo();
 
 // connection listener abstracted as a function
 function connectionListener(snapshot) {
-    console.log("Connection: State=" + state);
+    // console.log("Connection: State=" + state);
     
     if (!snapshot.child("user1").exists()) {
         console.log("check " + snapshot.child("user1").exists());
@@ -182,16 +182,25 @@ function connectionListener(snapshot) {
 
 // function to deal with timeout of main part of game
 function gamePlay() {
+    
     // set up images etc.
     $("#userImage").attr("src", "assets/images/question_mark.png");
     $("#opponentImage").attr("src", "assets/images/question_mark.png");
     $("#statusSpan").text("Playing game");
-    console.log("setting timeout");
+    // console.log("setting timeout");
+    // clear connection information to make it easier to play another game
+    connectingRef.set({
+        user1: "",
+        user2: "",
+        start: ""
+    });
     // set up progress bar
     progressBarTimer = 0;
     $("#progressBar").css("width", "0%");
     localInterval = setInterval(updateProgressBar, (timeAllowed/20)*1000);
     localTimeout = setTimeout(function () {
+        // set state back to waitingForStart so another game can be played
+        changeState("waitingForStart");
         // work out who won
         // no input is a loss
         console.log("Timeout you " + rpsSelect + " opponent " + opponentRpsSelect);
@@ -265,15 +274,15 @@ function gamePlay() {
         
         
         // reset values
-        // rpsSelect="";
-        // opponentRpsSelect = "";
+        rpsSelect="";
+        opponentRpsSelect = "";
         result = "";
         opponentResult = "";
         // reset values in database
-        // dataRef.update({
-        //     rpsSelectUser1: "",
-        //     rpsSelectUser2: ""
-        // });
+        dataRef.update({
+            rpsSelectUser1: "",
+            rpsSelectUser2: ""
+        });
         connectingRef.update({start: ""});
         // set state back to waitingForStart so another game can be played
         changeState("waitingForStart");
