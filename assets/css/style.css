@@ -6,6 +6,15 @@
     padding: 0;
     margin: 0;
 }
+
+.playerBox {
+    margin: 4px;
+    padding: 4px;
+    border-style: solid;
+    border-color: darkred;
+    border-width: 4px;
+    border-radius: 10px;
+}
 #rpsBox {
     /* height: 20rem; */
     background-image: url(../images/paper_texture.jpg);
@@ -32,10 +41,29 @@
     height: 75px;
 }
 
+#statusInfo {
+     width: 60%;
+}
 .infoSpan {
-    font-size: 1.5rem;
+    /* font-size: 1.5rem; */
     margin-left: 10px;
+   
 }
 .infoRow {
-    font-size: 1.5rem;
+    /* font-size: 1.5rem; */
+}
+
+#logoutButton {
+    float:right;
+}
+#chatBox {
+    height: 12rem;
+    border-style: solid;
+    border-color: darkgrey;
+    border-width: 5px;
+    border-radius: 10px;
+    width: 40%;
+    overflow-y: auto;
+    scroll-behavior: auto;
+    font-size: 0.8rem;
 }

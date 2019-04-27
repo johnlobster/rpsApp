@@ -29,7 +29,9 @@
     <div class="jumbotron jumbotron-fluid" id="myJumbotron">
         <div class="container-fluid">
             
-            <div id="jumbotronBox">
+            <div id="jumbotronBox" class="text-center">
+                <p class="lead mr-4" id="title">Multiplayer rock paper scissors<p>
+
                 <button class="btn btn-primary btn-lg" id="instructionsButton" data-toggle="modal"
                 data-target="#instructionsModal"> Instructions</button>
                 <!-- Instructions are a bootstrap modal will link to the instruction button  -->
@@ -45,16 +47,11 @@
                         </div>
                         <div class="modal-body">
                             
-                            <p>The object of the game is to defeat all your enemies</p>
-                            <p>First - select your hero - all the others become your enemies</p>
-                            <p>Second - choose the enemy you will face</p>
-                            <p>Third - fight your enemy by clicking on the light sabre</p>
-                            <br>
-                            <p>Each time your hero attacks, his ability to attack increases - the enemies attack does not
-                                increase</p>
-                                <p>When your enemy is defeated, move on to the next one</p>
-                                <p>When all the enemies are defeated, you can start again</p>
-                            </div>
+                            <p>This is a 2 player rock paper scissors game where each player uses their own browser. If more than 2 people try to join the game it will not work as expected</p>
+                            <p>The first task is to log on. The program will then wait until the second player is logged on, and then the start button becomes enabled.</p>
+                            <p>Either player can press the start button, and then both users have 15 seconds to select rock,paper or scissors. You can change your mind and pick something different during this time</p>
+                            <p>The results are then shown on screen and the program waits for the start button to be pressed again</p>
+                            
                             <div class="modal-footer">
                                 <button type="button" id="closeInstructions2" class="btn btn-secondary"
                                 data-dismiss="modal">Close</button>
@@ -62,7 +59,7 @@
                         </div>
                     </div>
                 </div>
-                <p class="lead mr-4" id="title">Multiplayer rock paper scissors</p>
+                
             </div>
                 
         </div>
@@ -71,9 +68,9 @@
     
     <div class="container container-fluid">
         <div class="row"> <!-- The top area showing user, rps images and opponent-->
-            <div class="col-12 col-md-3" id="userBox">
+            <div class="col-12 col-md-2 playerBox" id="userBox">
                 <div class="row">
-                    <h3><span id="nameSpan" >You</span></h3>
+                    <h4><span id="nameSpan" >You</span></h4>
                 </div>
                 <div class="row infoRow">
                     <img id ="userImage" src="assets/images/question_mark.png" alt ="question mark">
@@ -118,10 +115,10 @@
                 
                 
             </div>
-            <div class="col-12 col-md-3" id="opponentBox">
+            <div class="col-12 col-md-2 playerBox" id="opponentBox">
                 
                 <div class="row">
-                    <h3><span id="opponentNameSpan" >The enemy</span></h3>
+                    <h4><span id="opponentNameSpan" >The enemy</span></h4>
                 </div>
                 <div class="row infoRow">
                     <img id="opponentImage" src="assets/images/question_mark.png" alt ="question mark">
@@ -148,10 +145,11 @@
         <div class="row">
             <!-- start button doesn't work before login-->
             <button id="startButton" class= "btn btn-primary m-2" disabled >Start</button>
-            <h3>
+            <h3 id="statusInfo">
                 <span class="ml-2 mr-2">Status</span>
                 <span id="statusSpan"></span>
             </h3>
+            <button id="logoutButton" class= "btn btn-primary m-2">Logout</button>
         </div>
         <div class="row"> <!-- login area, shown first -->
             <div id="loginDiv" class="col-12 col-md-6">
@@ -166,15 +164,14 @@
             <div id="chatForm" class="col-12 col-md-6" style="display:none;"> <!-- chat area shown after login -->
                 <form>
                     <div class="form-group">
-                        <label for="chatTextBox">Example textarea</label>
+                        <label for="chatTextBox">Type chat in here</label>
                         <textarea class="form-control" id="chatTextBox" rows="3"></textarea>
                     </div>
-                    <button id="chatSubmitButton" type="submit" class="btn btn-primary mb-2">submit</button>
+                    <button id="chatSubmitButton" type="submit" class="btn btn-primary mb-2">submit chat</button>
                 </form>
             </div>
-            <div id="chat" class="col-12 col-md-6" style="display:none;">
+            <div id="chatBox" class="col-12 col-md-6" style="display:none;">
                 
-            </div>
 
         </div>
     </div>

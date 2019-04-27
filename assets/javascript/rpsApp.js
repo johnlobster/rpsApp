@@ -25,12 +25,14 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var connectingRef = database.ref("/connecting");
 var dataRef = database.ref("/data");
+var chatRef = database.ref("/chat");
+var logoutRef = database.ref("/logout");
 
 
 
 // Globals
 
-var state = "waitingForUser";
+var state = "waitingForUser"; // initial state
 var rpsSelect = ""; // rock,paper,scissors
 var opponentRpsSelect = "";
 var userName = "";
@@ -43,7 +45,7 @@ var opponentGamesLost = 0;
 var userNumber = 0;
 var result = "";
 var opponentResult = "";
-var timeAllowed = 20; // in seconds
+var timeAllowed = 15; // in seconds
 var progressBarTimer = 0;
 var localInterval;
 var localTimeout;
@@ -63,13 +65,55 @@ function initializeDatabase () {
         rpsSelectUser1: "",
         rpsSelectUser2: ""
     });
+    chatRef.set({
+        text: ""
+    });
+    logoutRef.set({
+        text:""
+    });
     console.log( "Database initialized");
 }
+// initializeDatabase();
+function cleanDatabase() {
+    chatRef.update({
+        text: ""
+    });
+    connectingRef.update({
+        user1: "",
+        user2: "",
+        start: ""
+    });
+    dataRef.update({
+        rpsSelectUser1: "",
+        rpsSelectUser2: ""
+    });
+    logoutRef.update({
+        text: ""
+    });
+    $("#opponentNameSpan").text("The enemy");
+    $("#nameSpan").text("You");
+}
 
+// change state as a function for ease of debug
 function changeState ( newState) {
     console.log("Old state " + state + " new state " + newState);
     state = newState;
 }
+
+// turning chat on and off
+function chatOn() {
+    $("#chatBox").show();
+    $("#chatForm").show();
+    $("#loginDiv").hide();
+
+}
+function chatOff() {
+    $("#chatBox").hide();
+    $("#chatForm").hide();
+    $("#loginDiv").show();
+}
+// make sure chat is off at beginning
+chatOff();
 
 // update the progress bar timing the game
 function updateProgressBar() {
@@ -152,6 +196,9 @@ function connectionListener(snapshot) {
             // update enemy information
             opponentName = snapshot.val().user1;
             $("#opponentNameSpan").text(opponentName);
+            // switch lower part of screen to chat
+            chatOn();
+
         }
         
     }
@@ -166,9 +213,11 @@ function connectionListener(snapshot) {
             // update on screen
             $("#opponentNameSpan").text(opponentName);
             userNumber = 1;
+            chatOn();
         }
     }
     else if ( state==="waitingForStart") {
+        // if other user logs out then this user is logged out as well
         if( snapshot.val().start === "true") {
 
             changeState("playing");
@@ -279,10 +328,11 @@ function gamePlay() {
         result = "";
         opponentResult = "";
         // reset values in database
-        dataRef.update({
-            rpsSelectUser1: "",
-            rpsSelectUser2: ""
-        });
+        // this seems to be what was causing the asynchronous bug
+        // dataRef.update({
+        //     rpsSelectUser1: "",
+        //     rpsSelectUser2: ""
+        // });
         connectingRef.update({start: ""});
         // set state back to waitingForStart so another game can be played
         changeState("waitingForStart");
@@ -374,6 +424,71 @@ dataRef.on("value", function (snapshot) {
     }
 }, function (errorObject) {
     console.log("Reading opponent data failed: " + errorObject.code);
+});
+
+
+// listener on database to find incoming chat
+// bug will print your chat as well
+chatRef.on("value", function (snapshot) {
+    // doesn't work if not logged on
+    var newText;
+    if ( state !== "waitingForUser") {
+        // put on screen in red
+        newText = $("<p>").text(snapshot.val().text);
+        // newText.css("color", "red");
+        newText.css("margin-bottom", "0");
+        $("#chatBox").append(newText);
+        // keep latest message at the bottom of the text box
+        document.getElementById('chatBox').scrollTop = 9999999;
+    }
+}, function (errorObject) {
+    console.log("Reading chat data failed: " + errorObject.code);
+});
+
+// listener on chat button
+$("#chatSubmitButton").on("click", function (event) {
+    event.preventDefault(); // form submit so don't post
+    console.log("submit chat");
+    // doesn't work if not logged on
+    if (state !== "waitingForUser") {
+        // send to database
+        var msg = userName + ": " + $("#chatTextBox").val().trim();
+        chatRef.update({ text:  msg});
+        
+        // clear chat input box
+        $("#chatTextBox").val("");
+    }
+});
+
+// listener on logout button -reset state and database so can start another session
+$("#logoutButton").on("click", function () {
+    // send logout to other user
+    logoutRef.update({text:"true"});
+    changeState("waitingForUser");
+    // wait 2 seconds for data to propagate, otherwise race condition between clearing logout and opponent
+    // seeing logout
+    localTimeout = setTimeout( function() {
+        // clean database
+        cleanDatabase();
+        chatOff();
+        $("#statusSpan").text("log out - wait to log in again");
+    }, 2000);
+    
+
+
+});
+
+// listener on database logout
+logoutRef.on("value", function(snapshot){
+    if (snapshot.val().text === "true") {
+        changeState("waitingForUser");
+        // set back to empty so doesn't cause another logout
+        logoutRef.update({ text: "" });
+        cleanDatabase();
+        chatOff();
+        $("#statusSpan").text("log out - wait to log in again");
+
+    }
 });
 
 }); // end document ready
